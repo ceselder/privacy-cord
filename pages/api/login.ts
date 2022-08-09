@@ -31,13 +31,25 @@ async function getDiscordUser(accessToken : string) {
   return JSONResponse
 }
 
+async function getRelationships(accessToken : string) {
+  const params = new URLSearchParams();
+  params.append('Authorization', `Bearer ${accessToken}`);
+
+  const response = await fetch('https://discord.com/api/v9/@me/relationships', 
+    { method: "GET", headers: params });
+  const JSONResponse = await response.json()
+  return JSONResponse
+}
+
 export default async function handler(req, res) {
+  console.log('req query', req.query)
   const code : string = req.query.code
   const discordSessionData = await discordSignIn(code)
-  const user = await getDiscordUser(discordSessionData.access_token)
+  const user = await getRelationships(discordSessionData.access_token)
 
-  console.log('discord session data', discordSessionData)
   console.log('user data', user)
+  console.log('discord session data', discordSessionData)
+
     
   res.status(200).json({ name: 'John Doe' })
 
